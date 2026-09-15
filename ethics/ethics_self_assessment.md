@@ -9,8 +9,8 @@ AI-generated images and does not collect personal data from individuals.
 
 ## 2. Coder consent — scope and extension
 
-- [ ] Original consent obtained from the two coders (Coder A / Coder B) for participation. Recorded: yes / no.
-- [ ] **Extended consent for public release of per-image coding judgments obtained** (or coders anonymized as Coder_1 / Coder_2 in all released files). Decision and date: _pending_.
+- [x] Original consent obtained from the two coders (Coder A / Coder B) for participation.
+- [x] **Extended consent for public release of per-image coding judgments obtained** (coders remain anonymized as Coder A / Coder B in all released files). Confirmed by the authors, 2026-09.
 
 ## 3. Ethnicity, confrontation, and historical appellations
 

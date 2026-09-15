@@ -6,7 +6,7 @@
       "affiliation": "Independent researcher"
     }
   ],
-  "description": "Supplementary materials: 162 AI-generated images (6 models x 2 prompt conditions x 9 repetitions, plus training set), per-image coding table by two independent coders against 18 atomic indicators, three full prompt sets, decision-tree details, and ethics/compliance documentation. Images are AI-generated and published solely for critical scholarly analysis of historical distortion in T2I output.",
+  "description": "Supplementary materials: 162 AI-generated images (6 models x 3 prompt conditions [P1 low-constraint baseline, P2 evidentiary, P3 negative-frame] x 9 repetitions), plus 8 coder-training images, per-image coding table by two independent coders against 18 atomic indicators, three full prompt sets, decision-tree details, and ethics/compliance documentation. Images are AI-generated and published solely for critical scholarly analysis of historical distortion in T2I output.",
   "keywords": [
     "AI-generated images",
     "text-to-image",

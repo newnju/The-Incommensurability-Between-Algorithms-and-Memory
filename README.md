@@ -17,7 +17,7 @@ Supplementary materials for the study of AI-generated images depicting Tang-dyna
 
 ## Sample structure
 
-6 models (M1–M6) × 3 prompt conditions (P1/P2) × 9 repetitions = 162 valid images (54 per condition).
+6 models (M1–M6) × 3 prompt conditions (P1 low-constraint baseline / P2 evidentiary / P3 negative-frame) × 9 repetitions = 162 valid images (54 per condition).
 Original full-resolution images (~1.5 GB) are deposited on Zenodo; this repository mirrors downscaled versions for review convenience.
 
 ## Citation

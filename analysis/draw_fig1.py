@@ -7,15 +7,18 @@ theory resources -> algorithmic encoding -> incommensurability thesis
 -> generation bias / risk-transformation conditions / resilient governance,
 with a dashed feedback loop from governance back to encoding.
 
-Design notes (v2):
-- straight orthogonal connectors with rounded corners (no long diagonals);
-- single visual column: theory -> encoding -> thesis -> three bottom boxes;
-- feedback loop routed along the right margin with two 90-degree turns;
-- slightly larger boxes and tighter spacing for print legibility.
+Design notes (v3 — connectors):
+- straight edge-to-edge connectors (shortest visual path, diagonals allowed);
+- every arrow starts/ends ON a box border with a small clearance gap, never
+  entering or touching another box;
+- fan-out from the thesis box to the three bottom boxes uses three
+  non-overlapping diagonals with distinct anchor points.
 """
 from matplotlib.patches import FancyBboxPatch
 from fig_style import apply_style, save_all
 import matplotlib.pyplot as plt
+
+GAP = 0.06  # clearance between arrowhead and box border
 
 
 def draw_fig1(save=True):
@@ -25,75 +28,79 @@ def draw_fig1(save=True):
     ax.set_ylim(0, 12)
     ax.axis('off')
 
-    def box(x, y, w, h, text, fs=8, bold_first=False):
+    def box(x, y, w, h, text, fs=8):
         p = FancyBboxPatch(
             (x, y), w, h,
             boxstyle="round,pad=0.06,rounding_size=0.12",
             linewidth=0.9, edgecolor='black', facecolor='white')
         ax.add_patch(p)
-        if bold_first:
-            lines = text.split('\n')
-            ax.text(x + w / 2, y + h / 2, '\n'.join(lines),
-                    ha='center', va='center', fontsize=fs,
-                    linespacing=1.35)
-        else:
-            ax.text(x + w / 2, y + h / 2, text,
-                    ha='center', va='center', fontsize=fs,
-                    linespacing=1.35)
+        ax.text(x + w / 2, y + h / 2, text, ha='center', va='center',
+                fontsize=fs, linespacing=1.35)
+        # border rectangle with pad, for reference:
+        # actual extent: x-pad .. x+w+pad, y-pad .. y+h+pad (pad=0.06)
+        return (x - 0.06, y - 0.06, x + w + 0.06, y + h + 0.06)
 
-    def connect_v(x, y1, y2):
-        """Straight vertical connector with arrowhead at (x, y2)."""
-        ax.annotate('', xy=(x, y2), xytext=(x, y1),
+    def arrow_towards(x1, y1, bx0, by0, bx1, by1):
+        """Straight arrow from point (x1, y1) to the nearest point on the
+        border of box (bx0, by0, bx1, by1), stopping GAP short of it."""
+        cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
+        dx, dy = cx - x1, cy - y1
+        # param t where segment from (x1,y1) crosses the box border
+        ts = []
+        if dx != 0:
+            for bx in (bx0, bx1):
+                t = (bx - x1) / dx
+                yy = y1 + t * dy
+                if by0 <= yy <= by1:
+                    ts.append(t)
+        if dy != 0:
+            for by in (by0, by1):
+                t = (by - y1) / dy
+                xx = x1 + t * dx
+                if bx0 <= xx <= bx1:
+                    ts.append(t)
+        t = min(t for t in ts if t > 0) - GAP / max(abs(dx), abs(dy), 1e-9)
+        ax.annotate('', xy=(x1 + t * dx, y1 + t * dy), xytext=(x1, y1),
                     arrowprops=dict(arrowstyle='-|>', lw=0.9,
                                     color='black', shrinkA=0, shrinkB=0))
 
-    def elbow(x1, y1, x2, y2, xm):
-        """Orthogonal 3-segment connector: horizontal -> vertical -> horizontal,
-        arrowhead at (x2, y2)."""
-        ax.plot([x1, xm, xm], [y1, y1, y2], color='black', lw=0.9,
-                solid_capstyle='round', zorder=1)
-        ax.annotate('', xy=(x2, y2), xytext=(xm, y2),
-                    arrowprops=dict(arrowstyle='-|>', lw=0.9,
-                                    color='black', shrinkA=0, shrinkB=0))
+    # ---- boxes (store extents for connector routing) --------------------
+    ext_th_l = box(0.6, 10.3, 4.0, 1.4, "第三持存（斯蒂格勒）\n历史记忆的技术化生产")
+    ext_th_r = box(5.4, 10.3, 4.0, 1.4, "文化表征（霍尔）\n意义的选择、压缩与自然化")
+    ext_enc = box(3.0, 7.9, 4.0, 1.3, "算法编码\n技术记忆与符号实践的接触界面")
+    ext_thesis = box(3.0, 5.8, 4.0, 1.3, "“不可通约”\n概率优化目标 ≠ 历史证据标准")
+    ext_bias = box(0.3, 1.6, 3.0, 2.4,
+                   "生成端偏差\n\n时代与物质文化拼贴\n身份标签化与关系扁平化\n视觉语法替代与生成幻觉",
+                   fs=7)
+    ext_risk = box(3.5, 1.6, 3.0, 2.4,
+                   "风险转化条件\n\n来源不透明与高拟真传播\n平台重复推荐与放大\n机构采用缺乏专家核验",
+                   fs=7)
+    ext_gov = box(6.7, 1.6, 3.0, 2.4,
+                  "韧性治理\n\n生成端知识约束与校准\n传播端来源凭证与追溯\n使用端分级与核验",
+                  fs=7)
 
-    # ---- Layer 1: theoretical resources -------------------------------
-    box(0.6, 10.3, 4.0, 1.4, "第三持存（斯蒂格勒）\n历史记忆的技术化生产")
-    box(5.4, 10.3, 4.0, 1.4, "文化表征（霍尔）\n意义的选择、压缩与自然化")
+    # ---- connectors: shortest straight paths, edge-to-edge ---------------
+    # theory boxes -> encoding (bottom edges to top edge, no crossing)
+    arrow_towards(2.6, 10.3, *ext_enc)     # from bottom of left theory box
+    arrow_towards(7.4, 10.3, *ext_enc)     # from bottom of right theory box
+    # encoding -> thesis
+    arrow_towards(5.0, 7.9, *ext_thesis)
+    # thesis -> three bottom boxes (distinct anchors on thesis bottom edge)
+    arrow_towards(3.6, 5.8, *ext_bias)
+    arrow_towards(5.0, 5.8, *ext_risk)
+    arrow_towards(6.4, 5.8, *ext_gov)
 
-    # ---- Layer 2: algorithmic encoding --------------------------------
-    box(3.0, 7.9, 4.0, 1.3, "算法编码\n技术记忆与符号实践的接触界面")
-
-    # ---- Layer 3: core thesis ------------------------------------------
-    box(3.0, 5.8, 4.0, 1.3, "“不可通约”\n概率优化目标 ≠ 历史证据标准")
-
-    # ---- Layer 4: three bottom boxes -----------------------------------
-    box(0.3, 1.6, 3.0, 2.4,
-        "生成端偏差\n\n时代与物质文化拼贴\n身份标签化与关系扁平化\n视觉语法替代与生成幻觉",
-        fs=7)
-    box(3.5, 1.6, 3.0, 2.4,
-        "风险转化条件\n\n来源不透明与高拟真传播\n平台重复推荐与放大\n机构采用缺乏专家核验",
-        fs=7)
-    box(6.7, 1.6, 3.0, 2.4,
-        "韧性治理\n\n生成端知识约束与校准\n传播端来源凭证与追溯\n使用端分级与核验",
-        fs=7)
-
-    # ---- Connectors -----------------------------------------------------
-    # theory boxes converge into encoding: vertical drop then horizontal merge
-    elbow(2.6, 10.3, 4.4, 9.2, 2.6)      # left theory -> encoding (left side)
-    elbow(7.4, 10.3, 5.6, 9.2, 7.4)      # right theory -> encoding (right side)
-    connect_v(5.0, 7.9, 7.1)             # encoding -> thesis
-
-    # thesis fans out to the three bottom boxes (orthogonal)
-    elbow(4.0, 5.8, 1.8, 4.0, 4.0)
-    connect_v(5.0, 5.8, 4.0)
-    elbow(6.0, 5.8, 8.2, 4.0, 6.0)
-
-    # dashed feedback loop: governance -> encoding, routed on the right margin
-    ax.plot([9.7, 9.7], [4.0, 8.55], ls='--', lw=0.9, color='black',
-            solid_capstyle='round', zorder=1)
-    ax.annotate('', xy=(7.0, 8.55), xytext=(9.7, 8.55),
+    # dashed feedback loop: governance -> encoding (right margin, clear path)
+    gx = (ext_gov[0] + ext_gov[2]) / 2
+    ax.plot([9.85, 9.85], [ext_gov[3] + 0.55, 8.55], ls='--', lw=0.9,
+            color='black', solid_capstyle='round', zorder=1)
+    ax.annotate('', xy=(ext_enc[2] + GAP, 8.55),
+                xytext=(9.85, 8.55),
                 arrowprops=dict(arrowstyle='-|>', lw=0.9, ls='--',
                                 color='black', shrinkA=0, shrinkB=0))
+    # short link from governance top-right up to the loop start
+    ax.plot([gx + 1.2, 9.85], [ext_gov[3], ext_gov[3] + 0.55],
+            ls='--', lw=0.9, color='black', solid_capstyle='round', zorder=1)
 
     if save:
         save_all(fig, 'fig1')

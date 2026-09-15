@@ -41,13 +41,7 @@ def draw_fig3(save=True):
         ax.text(0.5, -0.04, f'{iid}   |   Y = {y_val}',
                 ha='center', va='top', fontsize=9, transform=ax.transAxes)
 
-    # critical-analysis note under panel (c), per ethics protocol
-    axes[2].text(0.5, -0.16,
-                 '注：图示为AI生成图像，仅用于对表征模式的批判性分析',
-                 ha='center', va='top', fontsize=7.5, color='#555555',
-                 transform=axes[2].transAxes)
-
-    fig.tight_layout(rect=[0, 0.04, 1, 1])
+    fig.tight_layout(rect=[0, 0.02, 1, 1])
     if save:
         save_all(fig, 'fig3')
     return fig

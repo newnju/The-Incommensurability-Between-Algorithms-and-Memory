@@ -1,0 +1,24 @@
+{
+  "title": "AIGC and the Visual Symbol System of Tang Historical Painting: Six-Model, Three-Prompt-Condition Corpus (162 images)",
+  "creators": [
+    {
+      "name": "diamond",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "description": "Supplementary materials: 162 AI-generated images (6 models x 2 prompt conditions x 9 repetitions, plus training set), per-image coding table by two independent coders against 18 atomic indicators, three full prompt sets, decision-tree details, and ethics/compliance documentation. Images are AI-generated and published solely for critical scholarly analysis of historical distortion in T2I output.",
+  "keywords": [
+    "AI-generated images",
+    "text-to-image",
+    "Tang dynasty",
+    "historical distortion",
+    "content analysis",
+    "inter-rater reliability"
+  ],
+  "license": "CC-BY-4.0",
+  "access_right": "open",
+  "upload_type": "dataset",
+  "language": "eng",
+  "communities": [],
+  "related_identifiers": []
+}

@@ -31,6 +31,9 @@ Following the preregistered rule in `ethics/model_terms_compliance.md`:
 - **Restricted**: f11-related labeled-representation samples → thumbnail only;
   P3 confrontation samples → captioned context required.
 - **Excluded**: images from platforms whose terms prohibit redistribution.
+  Verification completed 2026-09: no platform among M1–M6 restricts academic
+  use or redistribution; no image is excluded on terms grounds (see
+  `model_terms_compliance.md`).
 
 ## 5. Scope of claims
 

@@ -40,7 +40,7 @@ def draw_fig1(save=True):
         # actual extent: x-pad .. x+w+pad, y-pad .. y+h+pad (pad=0.06)
         return (x - 0.06, y - 0.06, x + w + 0.06, y + h + 0.06)
 
-    def arrow_towards(x1, y1, bx0, by0, bx1, by1):
+    def arrow_towards(x1, y1, bx0, by0, bx1, by1, dashed=False):
         """Straight arrow from point (x1, y1) to the nearest point on the
         border of box (bx0, by0, bx1, by1), stopping GAP short of it."""
         cx, cy = (bx0 + bx1) / 2, (by0 + by1) / 2
@@ -62,6 +62,7 @@ def draw_fig1(save=True):
         t = min(t for t in ts if t > 0) - GAP / max(abs(dx), abs(dy), 1e-9)
         ax.annotate('', xy=(x1 + t * dx, y1 + t * dy), xytext=(x1, y1),
                     arrowprops=dict(arrowstyle='-|>', lw=0.9,
+                                    linestyle='--' if dashed else '-',
                                     color='black', shrinkA=0, shrinkB=0))
 
     # ---- boxes (store extents for connector routing) --------------------
@@ -90,17 +91,10 @@ def draw_fig1(save=True):
     arrow_towards(5.0, 5.8, *ext_risk)
     arrow_towards(6.4, 5.8, *ext_gov)
 
-    # dashed feedback loop: governance -> encoding (right margin, clear path)
-    gx = (ext_gov[0] + ext_gov[2]) / 2
-    ax.plot([9.85, 9.85], [ext_gov[3] + 0.55, 8.55], ls='--', lw=0.9,
-            color='black', solid_capstyle='round', zorder=1)
-    ax.annotate('', xy=(ext_enc[2] + GAP, 8.55),
-                xytext=(9.85, 8.55),
-                arrowprops=dict(arrowstyle='-|>', lw=0.9, ls='--',
-                                color='black', shrinkA=0, shrinkB=0))
-    # short link from governance top-right up to the loop start
-    ax.plot([gx + 1.2, 9.85], [ext_gov[3], ext_gov[3] + 0.55],
-            ls='--', lw=0.9, color='black', solid_capstyle='round', zorder=1)
+    # dashed feedback loop: governance -> encoding, single straight diagonal
+    # (shortest path, no bends; starts on governance top border, ends GAP
+    # short of the encoding right border — never entering another box)
+    arrow_towards(8.2, 4.0, *ext_enc, dashed=True)
 
     if save:
         save_all(fig, 'fig1')

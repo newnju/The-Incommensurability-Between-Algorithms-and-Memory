@@ -39,8 +39,8 @@ def draw_fig2(save=True):
     ax.set_ylabel('Bootstrap选择频率 π')
     ax.set_ylim(0, 1.05)
     for i, p in enumerate(PI):
-        if p >= 0.60:
-            ax.text(i, p + 0.03, f'{p:.3f}', ha='center', fontsize=8)
+        ax.text(i, p + 0.02, f'{p:.3f}', ha='center', va='bottom',
+                fontsize=6.5, rotation=90)
     ax.set_title('(a) 选择频率（B=10000）', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 

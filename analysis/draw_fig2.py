@@ -41,7 +41,7 @@ def draw_fig2(save=True):
     for i, p in enumerate(PI):
         ax.text(i, p + 0.02, f'{p:.3f}', ha='center', va='bottom',
                 fontsize=6.5, rotation=90)
-    ax.set_title('(a) 选择频率（B=10000）', loc='left')
+    ax.set_title('(a) 10000次模型分层Bootstrap选择频率', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
     # (b) leave-one-model-out inclusion matrix
@@ -60,7 +60,7 @@ def draw_fig2(save=True):
         ax.text(MAT.shape[1] + 0.1, i, f'{c}/6', va='center', ha='left',
                 fontsize=8)
     ax.set_xlim(-0.5, MAT.shape[1] + 0.8)
-    ax.set_title('(b) 留一模型入选矩阵', loc='left')
+    ax.set_title('(b) 六次留一模型入选矩阵', loc='left')
 
     # (c) dimension-level kappa forest plot (values from workbook)
     ax = axes[2]
@@ -89,7 +89,7 @@ def draw_fig2(save=True):
     ax.set_xlabel('线性加权 Kappa（95% CI）')
     ax.set_xlim(0.30, 1.05)
     ax.axvline(0.60, ls=':', lw=0.6, color='gray')
-    ax.set_title('(c) 维度级信度', loc='left')
+    ax.set_title('(c) 维度信度≠筛选稳定性', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
     fig.tight_layout()

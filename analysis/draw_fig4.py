@@ -85,7 +85,7 @@ def draw_fig4(save=True):
     ax.set_yticklabels(labels, fontsize=8)
     ax.set_xlabel('维度分差异（95% CI）')
     ax.set_xlim(-0.30, 0.55)
-    ax.set_title('(b) 条件对比', loc='left')
+    ax.set_title('(b) 条件对比：点估计与95% CI', loc='left')
     ax.text(-0.24, 3.55, '等效区间 ±0.25', fontsize=8, color='gray')
     ax.spines[['top', 'right']].set_visible(False)
 
@@ -110,7 +110,7 @@ def draw_fig4(save=True):
     ax.set_xticklabels(conds)
     ax.set_ylabel('2级失真比例（%）')
     ax.set_ylim(0, 70)
-    ax.set_title('(c) 探索性：2级比例', loc='left')
+    ax.set_title('(c) 探索性：2级比例及Wilson 95% CI', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
     fig.tight_layout()

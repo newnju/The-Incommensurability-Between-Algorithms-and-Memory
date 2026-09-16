@@ -31,9 +31,9 @@ PANELS = [
 
 def draw_fig3(save=True):
     apply_style()
-    # 宋体五号 = 10.5pt, applied to all in-figure text (titles + captions)
-    song = {'fontfamily': ['SimSun', 'Songti SC', 'NSimSun', 'serif'],
-            'fontsize': 10.5}
+    # 宋体四号 = 14pt, applied to all in-figure text (titles + captions)
+    song = {'fontfamily': ['SimSun', 'NSimSun', 'serif'],
+            'fontsize': 14}
     fig, axes = plt.subplots(1, 3, figsize=(12.0, 5.2))
 
     for ax, (iid, path, title, y_val) in zip(axes, PANELS):

@@ -31,15 +31,18 @@ PANELS = [
 
 def draw_fig3(save=True):
     apply_style()
+    # 宋体五号 = 10.5pt, applied to all in-figure text (titles + captions)
+    song = {'fontfamily': ['SimSun', 'Songti SC', 'NSimSun', 'serif'],
+            'fontsize': 10.5}
     fig, axes = plt.subplots(1, 3, figsize=(12.0, 5.2))
 
     for ax, (iid, path, title, y_val) in zip(axes, PANELS):
         img = mpimg.imread(path)
         ax.imshow(img)
         ax.axis('off')
-        ax.set_title(title, loc='left', pad=4)
+        ax.set_title(title, loc='left', pad=4, **song)
         ax.text(0.5, -0.04, f'{iid}   |   Y = {y_val}',
-                ha='center', va='top', fontsize=9, transform=ax.transAxes)
+                ha='center', va='top', transform=ax.transAxes, **song)
 
     fig.tight_layout(rect=[0, 0.02, 1, 1])
     if save:

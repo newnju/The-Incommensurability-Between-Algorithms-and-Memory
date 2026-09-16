@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Figure 2 — Atomic-indicator Bootstrap selection frequency, leave-one-model-
-out stability matrix, and dimension-level reliability (kappa forest plot).
+"""Figure 2 — Atomic-indicator Bootstrap selection frequency and dimension-
+level reliability (two panels).
 
 ALL data read from the coding workbook via fig_data (single source of truth):
 - (a) pi values: sheet 稳定性_留一, column Bootstrap选择频率πj
-- (b) inclusion matrix: same sheet, columns 剔除M1..剔除M6
-- (c) kappa + 95% CI: sheet 维度_Kappa
+- (b) kappa + 95% CI: sheet 维度_Kappa
+
+Note: the leave-one-model-out inclusion matrix (sheet 稳定性_留一, cols
+剔除M1..剔除M6) is intentionally NOT plotted as a panel — the counts are
+already reported in manuscript Table 2 and the text; the full matrix remains
+available in the public coding workbook.
 """
 import numpy as np
 from fig_style import apply_style, save_all
@@ -15,13 +19,13 @@ import fig_data
 
 def draw_fig2(save=True):
     apply_style()
-    f_labels, PI, MAT = fig_data.stability_data()
+    f_labels, PI, _MAT = fig_data.stability_data()
     KD = fig_data.kappa_data()
     n_f = len(f_labels)
 
     fig, axes = plt.subplots(
-        1, 3, figsize=(13.5, 4.2),
-        gridspec_kw={'width_ratios': [1.35, 1.15, 1.10]})
+        1, 2, figsize=(11.0, 4.2),
+        gridspec_kw={'width_ratios': [1.5, 1.1]})
 
     # (a) Bootstrap selection frequency
     ax = axes[0]
@@ -44,26 +48,8 @@ def draw_fig2(save=True):
     ax.set_title('(a) 10000次模型分层Bootstrap选择频率', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
-    # (b) leave-one-model-out inclusion matrix
+    # (b) dimension-level kappa forest plot (values from workbook)
     ax = axes[1]
-    ax.imshow(MAT, cmap='Greys', vmin=0, vmax=1, aspect='auto')
-    ax.set_xticks(range(MAT.shape[1]))
-    ax.set_xticklabels([f'M{i}' for i in range(1, MAT.shape[1] + 1)],
-                       fontsize=8)
-    ax.set_yticks(range(n_f))
-    ax.set_yticklabels(f_labels, fontsize=8)
-    ax.set_xticks(np.arange(-0.5, MAT.shape[1], 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, n_f, 1), minor=True)
-    ax.grid(which='minor', color='black', lw=0.3)
-    ax.tick_params(which='minor', length=0)
-    for i, c in enumerate(MAT.sum(axis=1)):
-        ax.text(MAT.shape[1] + 0.1, i, f'{c}/6', va='center', ha='left',
-                fontsize=8)
-    ax.set_xlim(-0.5, MAT.shape[1] + 0.8)
-    ax.set_title('(b) 六次留一模型入选矩阵', loc='left')
-
-    # (c) dimension-level kappa forest plot (values from workbook)
-    ax = axes[2]
     labels = list(KD['dims']) + ['合并κ', '效标Y']
     means = np.array([KD['dims'][d][0] for d in KD['dims']] +
                      [KD['pooled'][0], KD['criterion_Y'][0]])
@@ -89,7 +75,7 @@ def draw_fig2(save=True):
     ax.set_xlabel('线性加权 Kappa（95% CI）')
     ax.set_xlim(0.30, 1.05)
     ax.axvline(0.60, ls=':', lw=0.6, color='gray')
-    ax.set_title('(c) 维度信度≠筛选稳定性', loc='left')
+    ax.set_title('(b) 维度信度≠筛选稳定性', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
     fig.tight_layout()

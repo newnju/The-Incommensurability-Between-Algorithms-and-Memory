@@ -13,7 +13,7 @@ Images used (also archived at full resolution on Zenodo):
 import os
 
 import matplotlib.image as mpimg
-from fig_style import apply_style, save_all
+from fig_style import apply_style, save_all, save_all_gray
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -31,9 +31,9 @@ PANELS = [
 
 def draw_fig3(save=True):
     apply_style()
-    # 宋体四号 = 14pt, applied to all in-figure text (titles + captions)
+    # 宋体四号 = 14pt, enlarged by two sizes to 16pt (三号), applied to all in-figure text (titles + captions)
     song = {'fontfamily': ['SimSun', 'NSimSun', 'serif'],
-            'fontsize': 14}
+            'fontsize': 16}
     fig, axes = plt.subplots(1, 3, figsize=(12.0, 5.2))
 
     for ax, (iid, path, title, y_val) in zip(axes, PANELS):
@@ -47,6 +47,7 @@ def draw_fig3(save=True):
     fig.tight_layout(rect=[0, 0.02, 1, 1])
     if save:
         save_all(fig, 'fig3')
+        save_all_gray(fig, 'fig3')
     return fig
 
 

@@ -40,3 +40,14 @@ def save_all(fig, stem):
     fig.savefig(f'{stem}.pdf', bbox_inches='tight')
     fig.savefig(f'{stem}.tiff', dpi=600, bbox_inches='tight')
     fig.savefig(f'{stem}.png', dpi=200, bbox_inches='tight')  # preview only
+
+
+def save_all_gray(fig, stem):
+    """Grayscale variants for print: render PNG then convert to 8-bit gray."""
+    import io
+    from PIL import Image
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=600, bbox_inches='tight')
+    buf.seek(0)
+    Image.open(buf).convert('L').save(f'{stem}_gray.png')
+    fig.savefig(f'{stem}_gray.pdf', bbox_inches='tight')

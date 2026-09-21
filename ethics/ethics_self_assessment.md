@@ -1,6 +1,6 @@
 # Ethics Self-Assessment (ethics_self_assessment.md)
 
-> **Status: DRAFT** — complete before making the repository public.
+> **Status: FINAL** — ethics self-assessment completed 2026-09 prior to public release of the repository. All checklist items verified by the authors.
 
 ## 1. Human subjects
 

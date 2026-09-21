@@ -33,7 +33,7 @@ All plotted values are read at runtime from `coding_data/per_image_coding_table_
 
 ## Citation
 
-See `CITATION.cff`.
+Cite the associated manuscript (citation details to be updated upon publication). If you use the dataset itself, please reference this repository URL and the manuscript.
 
 ## Data Availability
 

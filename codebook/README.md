@@ -2,16 +2,17 @@
 
 This directory will contain:
 
-- `coding_manual.pdf` — full coding manual (to be added; the manual itself is
-  complete and used for coder training, only the PDF deposit is pending).
 - `18_atomic_indicators.md` — definitions and decision criteria for indicators
-  f1–f18 (to be extracted from the manual).
+  f1–f18 (to be added; the f1–f18 indicator definitions and the 0/1/2/NA
+  coding scale are already documented in the 说明 sheet of
+  `coding_data/per_image_coding_table_v1.0.xlsx`).
 - `training_protocol.md` — coder training and calibration protocol
   (to be added).
 
-Until these files are deposited, the authoritative reference for indicator
-definitions is the coding manual held by the authors; the coding table in
-`coding_data/` is already complete (both coders, all 162 images).
+Note: the per-image coding workbook (`coding_data/`) is complete (both coders,
+all 162 images) and includes indicator definitions; step-by-step decision
+criteria for borderline cases are held by the authors and available on
+request.
 
 ## Training images (`images/训练集/`)
 

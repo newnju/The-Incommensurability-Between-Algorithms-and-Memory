@@ -23,8 +23,8 @@ six studied models** (ChatGPT Images 2.0, gemini-3.1-flash-image,
 MAI-Image-2.5-Pro, Reve 2.1, Seedream 5.0 Lite, HunyuanImage-3.0), not
 third-party copyrighted archaeological material.
 
-Structure:
-- `训练集/*.jpg` — one training image per model (P1 condition)
+Structure (6 models × 3 conditions = 18 training images):
+- `训练集/p1/` — one training image per model (P1 condition)
 - `训练集/p2/` — one training image per model (P2 condition)
 - `训练集/p3/` — one training image per model (P3 condition)
 

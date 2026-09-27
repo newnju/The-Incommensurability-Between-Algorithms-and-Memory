@@ -35,19 +35,37 @@ def apply_style():
     plt.rcParams.update(RC)
 
 
-def save_all(fig, stem):
-    """Save one figure as PDF (vector) and 600-dpi TIFF/PNG."""
-    fig.savefig(f'{stem}.pdf', bbox_inches='tight')
-    fig.savefig(f'{stem}.tiff', dpi=600, bbox_inches='tight')
+def save_all(fig, stem, pdf=True):
+    """Save one figure as a 200-dpi PNG preview, plus a vector PDF.
+
+    Set pdf=False for figures built from bitmaps (e.g. Fig. 3, whose panels
+    are real images): a PDF of those only re-embeds the same bitmaps with no
+    vector benefit, and came to ~20 MB.
+
+    No TIFF is written: the manuscript uses the grayscale PNGs produced by
+    save_all_gray, and the 600-dpi TIFFs were 35-60 MB each (uncompressed,
+    ~150 MB across figures) for an output nobody consumed.
+
+    CreationDate is suppressed so the PDFs are byte-reproducible: matplotlib
+    otherwise stamps the current time into /CreationDate, which also changes
+    the derived /ID.  Re-running run_all.py then rewrites three PDFs that git
+    reports as modified even though not a single glyph has changed.
+    """
+    if pdf:
+        fig.savefig(f'{stem}.pdf', bbox_inches='tight',
+                    metadata={'CreationDate': None})
     fig.savefig(f'{stem}.png', dpi=200, bbox_inches='tight')  # preview only
 
 
 def save_all_gray(fig, stem):
-    """Grayscale variants for print: render PNG then convert to 8-bit gray."""
+    """Grayscale variant (the version used in the manuscript).
+
+    300 dpi is the print standard for raster figures and keeps the files
+    small; the colour PNG preview is 200 dpi.
+    """
     import io
     from PIL import Image
     buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=600, bbox_inches='tight')
+    fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
     buf.seek(0)
-    Image.open(buf).convert('L').save(f'{stem}_gray.png')
-    fig.savefig(f'{stem}_gray.pdf', bbox_inches='tight')
+    Image.open(buf).convert('L').save(f'{stem}_gray.png', optimize=True)

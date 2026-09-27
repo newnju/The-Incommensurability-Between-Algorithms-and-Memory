@@ -5,8 +5,12 @@ with equivalence band (two panels).
 ALL data read from the coding workbook via fig_data (single source of truth):
 - (a) dimension means per condition: sheet 提示条件汇总
 - (b) contrasts + 95% CI: recomputed from sheets 编码员A/编码员B with the
-  preregistered bootstrap (B=10000, seed 20260824, model-stratified;
-  consensus = mean of coders, NA -> 0)
+  preregistered bootstrap (B=CONTRAST_B=10^6, seed 20260824, model-
+  stratified; consensus = mean of coders, NA -> 0).  B is large because the
+  contrast is a difference of means of scores on the 0.5 grid, so its
+  bootstrap distribution is discrete (spacing 0.5/54 = 0.00926) and at
+  B=10^4 the percentile endpoints are decided by the RNG stream rather than
+  by the data; see CONTRAST_B in fig_data.py.
 
 Note: the exploratory grade-2 proportions (20/54, 16/54, 26/54; Wilson CI)
 are intentionally NOT plotted — they are reported in the manuscript text,
@@ -14,9 +18,14 @@ and the full counts remain in the public coding workbook (sheet
 提示条件汇总).
 """
 import numpy as np
-from fig_style import apply_style, save_all
+from fig_style import apply_style, save_all, save_all_gray
 import matplotlib.pyplot as plt
 import fig_data
+
+# Preregistered smallest effect of interest (the equivalence margin): 0.25 on
+# the 0-2 dimension scale, i.e. 12.5% of the range.  Drives both the shaded
+# band and its in-figure label, so the two can never drift apart.
+EQUIVALENCE_MARGIN = 0.25
 
 
 def draw_fig4(save=True):
@@ -65,7 +74,8 @@ def draw_fig4(save=True):
     lower = np.array([contrasts[k][1] for k in order])
     upper = np.array([contrasts[k][2] for k in order])
     y = np.arange(len(labels))
-    ax.axvspan(-0.25, 0.25, color='0.90', zorder=0)
+    ax.axvspan(-EQUIVALENCE_MARGIN, EQUIVALENCE_MARGIN,
+                color='0.90', zorder=0)
     ax.axvline(0, color='black', lw=0.8, zorder=1)
     for i in range(len(labels)):
         ax.errorbar(means[i], y[i],
@@ -81,12 +91,14 @@ def draw_fig4(save=True):
     ax.set_xlabel('维度分差异（95% CI）')
     ax.set_xlim(-0.30, 0.55)
     ax.set_title('(b) 条件对比：点估计与95% CI', loc='left')
-    ax.text(-0.24, 3.55, '等效区间 ±0.25', fontsize=8, color='gray')
+    ax.text(-0.24, 3.55, f'等效区间 ±{EQUIVALENCE_MARGIN:g}',
+            fontsize=8, color='gray')
     ax.spines[['top', 'right']].set_visible(False)
 
     fig.tight_layout()
     if save:
         save_all(fig, 'fig4')
+        save_all_gray(fig, 'fig4')
     return fig
 
 

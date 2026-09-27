@@ -1,18 +1,17 @@
 # Codebook
 
-This directory will contain:
+## Atomic indicators
 
-- `18_atomic_indicators.md` — definitions and decision criteria for indicators
-  f1–f18 (to be added; the f1–f18 indicator definitions and the 0/1/2/NA
-  coding scale are already documented in the 说明 sheet of
-  `coding_data/per_image_coding_table_v1.0.xlsx`).
-- `training_protocol.md` — coder training and calibration protocol
-  (to be added).
+The 18 atomic indicators f1–f18, their meaning, and the 0/1/2/NA coding scale
+are documented in the `说明` sheet of
+`coding_data/per_image_coding_table_v1.0.xlsx`. Step-by-step decision criteria
+for borderline cases are held by the authors and available on request.
 
-Note: the per-image coding workbook (`coding_data/`) is complete (both coders,
-all 162 images) and includes indicator definitions; step-by-step decision
-criteria for borderline cases are held by the authors and available on
-request.
+## Coder training
+
+Both coders completed a training session (>= 2 h) before formal coding, using
+the 18 training images in `images/训练集/`; see
+`ethics/ethics_self_assessment.md` §2 for the consent scope.
 
 ## Training images (`images/训练集/`)
 

@@ -1,0 +1,24 @@
+# Verified environment for the analysis scripts in analysis/.
+#
+# These are the exact versions under which every number in
+# coding_data/per_image_coding_table_v1.0.xlsx was reproduced by
+# `python analysis/verify_package.py` (all checks passing).
+#
+# Why pinning matters here: the bootstrap selection frequency pi_j is
+# computed by refitting a shallow CART in every bootstrap replicate, and the
+# CART seed only breaks ties between features with identical split gains.
+# Tie-breaking is therefore sensitive to the scikit-learn version, and the
+# resulting spread in pi_j (up to ~0.007 across seeds and versions) is large
+# enough to move the third decimal. Unpinned versions can therefore produce
+# pi_j values that no longer match Table 2 of the manuscript, even though no
+# threshold decision (pi >= 0.60) or stable-set membership changes.
+#
+# Install:  python -m pip install -r requirements.txt
+# Python:   3.13.14 (verified).  The floor is set by the pinned numpy, which
+#           requires >= 3.12.
+
+numpy==2.5.3
+scikit-learn==1.9.1
+matplotlib==3.11.2
+openpyxl==3.1.5
+Pillow==12.3.0

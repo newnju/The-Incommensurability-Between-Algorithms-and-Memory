@@ -15,7 +15,7 @@ Design notes (v3 — connectors):
   non-overlapping diagonals with distinct anchor points.
 """
 from matplotlib.patches import FancyBboxPatch
-from fig_style import apply_style, save_all
+from fig_style import apply_style, save_all, save_all_gray
 import matplotlib.pyplot as plt
 
 GAP = 0.06  # clearance between arrowhead and box border
@@ -98,6 +98,7 @@ def draw_fig1(save=True):
 
     if save:
         save_all(fig, 'fig1')
+        save_all_gray(fig, 'fig1')
     return fig
 
 

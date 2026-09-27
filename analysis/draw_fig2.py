@@ -12,7 +12,7 @@ already reported in manuscript Table 2 and the text; the full matrix remains
 available in the public coding workbook.
 """
 import numpy as np
-from fig_style import apply_style, save_all
+from fig_style import apply_style, save_all, save_all_gray
 import matplotlib.pyplot as plt
 import fig_data
 
@@ -45,7 +45,7 @@ def draw_fig2(save=True):
     for i, p in enumerate(PI):
         ax.text(i, p + 0.02, f'{p:.3f}', ha='center', va='bottom',
                 fontsize=6.5, rotation=90)
-    ax.set_title('(a) 10000次模型分层Bootstrap选择频率', loc='left')
+    ax.set_title(f'(a) {fig_data.BOOT_B}次模型分层Bootstrap选择频率', loc='left')
     ax.spines[['top', 'right']].set_visible(False)
 
     # (b) dimension-level kappa forest plot (values from workbook)
@@ -68,7 +68,7 @@ def draw_fig2(save=True):
                     markerfacecolor=face, markeredgecolor='black',
                     markeredgewidth=0.6)
         ax.text(upper[i] + 0.01, y[i],
-                f'{means[i]:.3f} [{lower[i]:.3f}, {upper[i]:.3f}]',
+                f'{means[i]:.3f} [{lower[i]:.2f}, {upper[i]:.2f}]',
                 va='center', fontsize=7.5)
     ax.set_yticks(y)
     ax.set_yticklabels(labels)
@@ -81,6 +81,7 @@ def draw_fig2(save=True):
     fig.tight_layout()
     if save:
         save_all(fig, 'fig2')
+        save_all_gray(fig, 'fig2')
     return fig
 
 

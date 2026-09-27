@@ -12,8 +12,9 @@ Sheets used:
 - 提示条件汇总: dimension means per condition and grade-2 proportions.
 - 编码员A / 编码员B: per-image atomic indicators (condition contrasts for
   Fig. 4b are recomputed from these with the preregistered bootstrap:
-  B=10000, seed 20260824, stratified by model, consensus = mean of coders,
-  NA -> 0).
+  B=CONTRAST_B, seed 20260824, stratified by model, consensus = mean of
+  coders, NA -> 0; see CONTRAST_B below for why the contrast CIs use a
+  larger B than the selection-frequency bootstrap).
 """
 import os
 import warnings
@@ -25,8 +26,29 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 WORKBOOK = os.path.join(HERE, '..', 'coding_data',
                         'per_image_coding_table_v1.0.xlsx')
 
-BOOT_B = 10000
-BOOT_SEED = 20260824
+BOOT_B = 10000          # bootstrap replicates for the selection frequency pi
+BOOT_SEED = 20260824    # preregistered seed, shared by every random process
+
+# Bootstrap replicates for the Fig. 4b condition contrasts.
+#
+# A contrast is a difference between two means of 54 consensus scores, and
+# every consensus score lies on the 0.5 grid (it is the mean of two integer
+# ratings).  The bootstrap distribution of the contrast is therefore
+# *discrete*, with spacing 0.5/54 = 0.00926.  The 97.5th percentile of such
+# a distribution does not converge smoothly at small B: it hops between
+# adjacent mass points from one RNG stream to the next.  Measured over 200
+# seeds at B=10000, the D1 P2-P1 upper limit alternates between +0.1944
+# (125/200) and +0.2037 (71/200); the D5 P2-P1 lower limit alternates
+# between -0.0833 (122/200) and -0.0741 (72/200); the D1 P3-P2 upper limit
+# between +0.3889 (108/200) and +0.3796 (90/200); the D5 P3-P2 lower limit
+# between +0.0370 (134/200) and +0.0278 (60/200).  At that B the third
+# decimal is a property of the seed, not of the data - and for D1 P2-P1 it
+# decides whether the upper limit "slightly exceeds" +-0.20 or not.
+#
+# At B=1000000 every endpoint is bit-identical across streams, so the
+# reported limits are reproducible.  The seed is still the preregistered
+# 20260824; at this B it no longer affects the answer.
+CONTRAST_B = 1000000
 
 
 def _load_workbook():
@@ -108,7 +130,7 @@ def _consensus_recs():
         for r in ws.iter_rows(min_row=2, values_only=True):
             if r[0] is None:
                 continue
-            v = lambda x: 0.0 if x is None else float(x)
+            v = lambda x: 0.0 if x is None or str(x) == 'NA' else float(x)
             rec = recs.setdefault(str(r[0]), {'model': r[1], 'cond': r[3]})
             rec.setdefault('vals', []).append((v(r[7]), v(r[23])))
     wb.close()
@@ -122,29 +144,36 @@ def _consensus_recs():
 
 
 def condition_contrasts():
-    """Fig. 4b contrasts: {label: (point, lo, hi)} via preregistered
-    stratified bootstrap (B=10000, seed 20260824)."""
+    """Fig. 4b contrasts: {label: (point, lo, hi)} via the preregistered
+    model-stratified bootstrap (B=CONTRAST_B, seed 20260824).
+
+    Design: 18 model x condition cells are resampled with replacement
+    within cell, the resampled consensus scores are pooled over the six
+    models, and the contrast is the difference of the two pooled means.
+    Percentile interval.  See CONTRAST_B for why B is large here.
+    """
     recs = _consensus_recs()
     models = sorted({r[0] for r in recs})
     vals = np.array([r[2:4] for r in recs], dtype=float)
     conds = np.array([r[1] for r in recs])
-    idx = {m: {c: np.where((np.array([r[0] for r in recs]) == m) &
-                           (conds == c))[0]
+    model_of = np.array([r[0] for r in recs])
+    idx = {m: {c: np.where((model_of == m) & (conds == c))[0]
                for c in ('P1', 'P2', 'P3')}
            for m in models}
+    n_per_cond = sum(idx[m]['P1'].size for m in models)
     rng = np.random.default_rng(BOOT_SEED)
 
     def boot(c1, c2, dim):
-        diffs = np.empty(BOOT_B)
-        for b in range(BOOT_B):
-            s1, s2 = [], []
-            for m in models:
-                i1, i2 = idx[m][c1], idx[m][c2]
-                s1 += list(vals[rng.choice(i1, i1.size, replace=True), dim])
-                s2 += list(vals[rng.choice(i2, i2.size, replace=True), dim])
-            diffs[b] = np.mean(s2) - np.mean(s1)
-        point = np.mean(vals[:, dim][conds == c2]) - \
-            np.mean(vals[:, dim][conds == c1])
+        acc = {c1: np.zeros(CONTRAST_B), c2: np.zeros(CONTRAST_B)}
+        for m in models:
+            for c in (c1, c2):
+                col = vals[idx[m][c], dim]
+                draw = rng.choice(col.size, size=(CONTRAST_B, col.size),
+                                  replace=True)
+                acc[c] += col[draw].sum(axis=1)
+        diffs = (acc[c2] - acc[c1]) / n_per_cond
+        point = vals[conds == c2, dim].mean() - \
+            vals[conds == c1, dim].mean()
         lo, hi = np.percentile(diffs, [2.5, 97.5])
         return point, lo, hi
 
@@ -153,3 +182,58 @@ def condition_contrasts():
         for c1, c2 in (('P1', 'P2'), ('P2', 'P3')):
             out[f'{dname} {c2}-{c1}'] = boot(c1, c2, dim)
     return out
+
+
+def criterion_y_by_id():
+    """Returns {ImageID: consensus criterion Y} from sheet 共识效标Y.
+
+    Used by Fig. 3, whose panels annotate the criterion Y of the displayed
+    image; reading it here keeps that annotation tied to the workbook
+    instead of hard-coded in the plotting script.
+    """
+    wb = _load_workbook()
+    out = {}
+    for r in wb['共识效标Y'].iter_rows(min_row=2, values_only=True):
+        if r[0] is None:
+            continue
+        out[str(r[0])] = float(r[7])          # column H = consensus Y
+    wb.close()
+    return out
+
+
+def full_dataset():
+    """Full modelling dataset used by the stability analysis.
+
+    Returns (X, y, meta):
+    - X: (162, 18) feature matrix — mean of coder A and B per atomic indicator
+      (NA -> 0), columns = f1..f18
+    - y: (162,) consensus criterion Y (sheet 共识效标Y, column H)
+    - meta: list of (model, condition) per image
+
+    Feature construction (coder mean, NA -> 0) and the consensus-Y rule follow
+    the preregistered specification; nothing is hard-coded here.
+    """
+    wb = _load_workbook()
+    feats = {}
+    for sheet in ('编码员A', '编码员B'):
+        for r in wb[sheet].iter_rows(min_row=2, values_only=True):
+            if r[0] is None:
+                continue
+            v = lambda x: 0.0 if x is None or str(x) == 'NA' else float(x)
+            rec = feats.setdefault(str(r[0]),
+                                  {'model': r[1], 'cond': r[3], 'v': []})
+            rec['v'].append([v(x) for x in r[6:24]])      # f1..f18
+    cons = {}
+    for r in wb['共识效标Y'].iter_rows(min_row=2, values_only=True):
+        if r[0] is None:
+            continue
+        cons[str(r[0])] = float(r[7])                     # consensus Y
+    wb.close()
+
+    X, y, meta = [], [], []
+    for iid in sorted(feats):
+        a, b = feats[iid]['v']
+        X.append([(a[j] + b[j]) / 2 for j in range(18)])
+        y.append(cons[iid])
+        meta.append((feats[iid]['model'], feats[iid]['cond']))
+    return np.array(X), np.array(y), meta

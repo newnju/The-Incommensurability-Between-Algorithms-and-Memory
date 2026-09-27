@@ -1,0 +1,27 @@
+# Conda environment for reproducing the analysis of
+# "The Incommensurability Between Algorithms and Memory".
+#
+#   conda env create -f environment.yml
+#   conda activate aigc-history-visual
+#   python analysis/run_all.py
+#
+# The pinned versions are the verified set: under exactly these versions
+# `analysis/verify_package.py` reproduces every number in
+# coding_data/per_image_coding_table_v1.0.xlsx. See requirements.txt for why
+# the scikit-learn version in particular has to be pinned (the CART
+# tie-breaking it controls moves pi_j by up to ~0.007).
+name: aigc-history-visual
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.13.14
+  - pip
+  - pip:
+      - numpy==2.5.3
+      - scikit-learn==1.9.1
+      - matplotlib==3.11.2
+      - openpyxl==3.1.5
+      - Pillow==12.3.0
